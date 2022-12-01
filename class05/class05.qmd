@@ -1,0 +1,81 @@
+---
+title: "Class 05: Data Visulaization with GGPLOT"
+author: Jada Ruiz
+format: gfm
+---
+# Our first ggplot
+
+To use the ggplot2 package I first need to have it installed on my computer. 
+
+To install any package we use the 'install.packages()' command. 
+
+Now can we use it? NO! We need first call 'library(ggplot2)'.
+
+```{r}
+library(ggplot2)
+ggplot()
+```
+
+```{r}
+mpg
+```
+
+Our first plot of displ vs hwy
+All ggplot() graphs are made in the same way:
+
+- data + aesthetics + geoms
+
+```{r}
+ggplot(mpg) + aes(x=displ, y=hwy) + geom_point()
+```
+
+```{r}
+ggplot(mpg) + aes(x=displ, y=hwy) + geom_point() + geom_smooth(method= lm, se=FALSE) 
+```
+# Plot of gene expression data
+
+First read the data from online. 
+
+```{r}
+url <- "https://bioboot.github.io/bimm143_S20/class-material/up_down_expression.txt"
+genes <- read.delim(url)
+head(genes)
+```
+
+> Q. How many genes are in this dataset?
+5196 genes 
+
+What are the colnames?
+```{r}
+colnames(genes)
+```
+
+A first version plot of this data Condition1 vs Condition2.
+```{r}
+p <- ggplot(genes) + aes(x=Condition1, y=Condition2, col=State) + geom_point() 
+p
+```
+
+> Q. How many genes are upregulated and down regulated?
+
+```{r}
+head(genes)
+```
+
+To get at just the State column:
+```{r}
+table(genes$State)
+```
+
+```{r}
+table( c("bimm143", "help", "me", "bimm143"))
+```
+You can save a ggplot underneath a variable and then recall it and add more to the plot that way without a big long chunk of code.
+
+```{r}
+p + scale_colour_manual( values=c("blue","gray","red") ) + labs(title = "My nice title", x="No drug", y="Drug")
+```
+
+
+
+
