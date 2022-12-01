@@ -1,0 +1,119 @@
+---
+title: "Class 6 R Functions"
+author: "Jada Ruiz"
+format: gfm
+---
+
+Example Student Grades:
+```{r}
+student1 <- c(100, 100, 100, 100, 100, 100, 100, 90)
+student2 <- c(100, NA, 90, 90, 90, 90, 97, 80)
+student3 <- c(90, NA, NA, NA, NA, NA, NA, NA)
+
+```
+
+>Q1. Write a function grade() to determine an overall grade from a vector of student homework
+assignment scores dropping the lowest single score. If a student misses a homework (i.e. has an NA value) this can be used as a score to be potentially dropped.
+
+Start by using the mean.
+```{r}
+mean(student1)
+```
+Find the minimum value of the student's grade because that is what we plan to drop.
+```{r}
+min(student1)
+```
+Different type of minimum function tell you what position the minimum value is in.
+```{r}
+which.min(student1)
+student1
+```
+
+Get a vector without the minimum value either by hard coding, which wont work for all students, or by using another method the minus index trick.
+```{r}
+student1[1:7]
+student1[-8]
+```
+
+So I will combine the output of 'which_min()' with the minus index trick to get the student's score without the lowest value.
+```{r}
+mean(student1[-which.min(student1)])
+```
+
+This will not work for student 2 specifically because student 2 has NA values which student 1 doesn't have so we didn't consider that while writing the code for student 1. 
+```{r}
+mean(student2[-which.min(student2)])
+```
+
+There is a 'na.rm=FALSE' which is by default, putting it equal to 'TRUE' will allow the code to actually work. 
+```{r}
+mean(student2[-which.min(student2)], na.rm=TRUE)
+student2
+```
+We see this doesn't exactly work for student 3 though because they have a lot of missing grades, more than one NA. 
+We must replace all of the NA (missing values) values with zero.
+```{r}
+student3[is.na(student3)] <- 0
+mean(student3[-which.min(student3)])
+
+```
+
+```{r}
+student2[is.na(student2)] <- 0
+mean(student2[-which.min(student2)])
+```
+Now turn into a function:
+```{r}
+grade <- function(x) {
+  x[is.na(x)] <- 0
+  mean(x[-which.min(x)])
+}
+
+```
+
+>Q2. Using your grade() function and the supplied gradebook, Who is the top scoring student overall in the gradebook? 
+
+```{r}
+url <- "https://tinyurl.com/gradeinput"
+gradebook <- read.csv(url, row.names=1)
+```
+
+Heres the gradebook:
+```{r}
+head(gradebook)
+```
+
+Now time to use the 'apply()' function.
+```{r}
+results <- apply(gradebook, 1, grade)
+results
+```
+
+Now time to find the highest scoring student:
+```{r}
+which.max(apply(gradebook, 1, grade))
+max(apply(gradebook, 1, grade))
+```
+
+>Q3. From your analysis of the gradebook, which homework was toughest on students (i.e. obtained the lowest scores overall? 
+
+```{r}
+which.min(apply(gradebook, 2, sum, na.rm=TRUE))
+```
+
+>Q4. Optional Extension: From your analysis of the gradebook, which homework was most
+predictive of overall score (i.e. highest correlation with average grade score)?
+
+```{r}
+mask <- gradebook
+mask[is.na(mask)] <- 0
+
+cor(mask$hw5, results)
+```
+Or use apply:
+```{r}
+apply(mask, 2, cor, y=results)
+```
+
+
+
